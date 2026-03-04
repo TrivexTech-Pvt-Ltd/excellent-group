@@ -1,5 +1,10 @@
 @import "tailwindcss/index.css";
 
+/* Explicitly tell Tailwind v4 to scan all source files.
+   This is critical for Netlify deploys where the cache may miss admin routes. */
+@source "../app/**/*.{ts,tsx}";
+@source "../components/**/*.{ts,tsx}";
+
 @theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
