@@ -4,4 +4,9 @@
 
 [build.environment]
   NODE_VERSION = "22"
-   
+
+# At runtime on Netlify, serverless functions run from /var/task.
+# The deployed repo files are accessible there.
+# Setting an absolute DATABASE_URL here ensures Prisma always finds dev.db.
+[functions]
+  included_files = ["prisma/dev.db"]
