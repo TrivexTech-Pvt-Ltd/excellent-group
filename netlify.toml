@@ -1,12 +1,12 @@
 [build]
-  command = "prisma generate && npm run build"
+  command = "npm run build"
   publish = ".next"
 
 [build.environment]
-  NODE_VERSION = "22"
+  NODE_VERSION = "20"
 
-# At runtime on Netlify, serverless functions run from /var/task.
-# The deployed repo files are accessible there.
-# Setting an absolute DATABASE_URL here ensures Prisma always finds dev.db.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
 [functions]
-  included_files = ["prisma/dev.db"]
+  included_files = ["prisma/dev.db", "node_modules/.prisma/**"]
