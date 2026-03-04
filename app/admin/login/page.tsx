@@ -29,9 +29,7 @@ export default function AdminLoginPage() {
                     <LoginForm />
                 </div>
 
-                <p className="text-center text-zinc-600 text-xs mt-6">
-                    Default credentials: <span className="text-zinc-400 font-mono">admin / admin123</span>
-                </p>
+
             </div>
         </div>
     );
