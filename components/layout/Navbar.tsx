@@ -74,6 +74,8 @@ const Navbar = () => {
                             )}
                         </AnimatePresence>
                     </div>
+                    <Link href="/#projects" className="hover:text-primary transition-colors">Projects</Link>
+                    <Link href="/#clients" className="hover:text-primary transition-colors">Clients</Link>
                     <Link href="/about" className="hover:text-primary transition-colors">About</Link>
                     <Link
                         href="/contact"
@@ -136,6 +138,8 @@ const Navbar = () => {
                                 </AnimatePresence>
                             </div>
 
+                            <Link href="/#projects" className="text-xl font-black uppercase" onClick={() => setIsOpen(false)}>Projects</Link>
+                            <Link href="/#clients" className="text-xl font-black uppercase" onClick={() => setIsOpen(false)}>Clients</Link>
                             <Link href="/about" className="text-xl font-black uppercase" onClick={() => setIsOpen(false)}>About</Link>
                             <Link
                                 href="/contact"

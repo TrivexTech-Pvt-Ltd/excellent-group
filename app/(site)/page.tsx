@@ -2,13 +2,20 @@ import {
   ArrowRight,
   Shield,
   Zap,
-  Globe 
+  Globe,
+  ExternalLink,
 } from "lucide-react";
 import BusinessCard from "@/components/BusinessCard";
 import { businesses } from "@/data/businesses";
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 
-export default function Home() {
+export default async function Home() {
+  const [projects, clients] = await Promise.all([
+    prisma.project.findMany({ orderBy: { createdAt: "desc" } }),
+    prisma.client.findMany({ orderBy: { createdAt: "desc" } }),
+  ]);
+
   return (
     <div className="flex flex-col w-full">
       {/* Hero Section */}
@@ -105,6 +112,130 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── Our Projects ─────────────────────────────────────────────── */}
+      <section id="projects" className="py-24 bg-zinc-50 dark:bg-zinc-950">
+        <div className="container mx-auto px-6">
+          {/* Header */}
+          <div className="flex flex-col md:flex-row justify-between items-end mb-16 space-y-4 md:space-y-0">
+            <div>
+              <h2 className="text-sm uppercase font-bold tracking-[0.3em] text-primary mb-4">
+                Our Work
+              </h2>
+              <h3 className="text-4xl md:text-6xl font-bold">Featured Projects</h3>
+            </div>
+            <p className="text-zinc-500 max-w-md md:text-right">
+              A selection of our latest builds — from digital platforms to
+              engineered solutions.
+            </p>
+          </div>
+
+          {/* Projects grid */}
+          {projects.length === 0 ? (
+            <div className="border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl py-20 text-center">
+              <p className="text-zinc-400">No projects yet — check back soon.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {projects.map((project) => (
+                <div
+                  key={project.id}
+                  className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl overflow-hidden hover:border-blue-400/50 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300"
+                >
+                  {/* Image */}
+                  <div className="aspect-video relative overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                    {(project.image.startsWith("http") ||
+                      project.image.startsWith("/")) ? (
+                      <img
+                        src={project.image}
+                        alt={project.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-4xl font-black text-zinc-300 dark:text-zinc-600 tracking-tighter">
+                          {project.name[0]}
+                        </span>
+                      </div>
+                    )}
+                    {/* Overlay gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-6">
+                    <h4 className="text-lg font-bold mb-2 text-zinc-900 dark:text-white">
+                      {project.name}
+                    </h4>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-3 leading-relaxed">
+                      {project.description}
+                    </p>
+                    {project.url && (
+                      <a
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-500 transition-colors"
+                      >
+                        Visit Project <ExternalLink size={14} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── Our Clients ──────────────────────────────────────────────── */}
+      <section id="clients" className="py-24">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-sm uppercase font-bold tracking-[0.3em] text-primary mb-4">
+              Trusted By
+            </h2>
+            <h3 className="text-4xl md:text-5xl font-bold">Our Clients</h3>
+            <p className="text-zinc-500 mt-4 max-w-xl mx-auto">
+              Leading companies across industries trust Excellent Group to
+              deliver.
+            </p>
+          </div>
+
+          {clients.length === 0 ? (
+            <p className="text-center text-zinc-400 py-10 italic">
+              Our client portfolio is growing…
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 md:gap-12 items-start">
+              {clients.map((client) => (
+                <div
+                  key={client.id}
+                  className="group flex flex-col items-center justify-center text-center space-y-4"
+                >
+                  <div className="h-24 w-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                    {client.logo.startsWith("http") ||
+                      client.logo.startsWith("/") ? (
+                      <img
+                        src={client.logo}
+                        alt={client.name}
+                        className="h-full max-w-full object-contain"
+                      />
+                    ) : (
+                      <span className="text-4xl font-black tracking-tight text-zinc-300 dark:text-zinc-600 group-hover:text-primary transition-colors duration-300 uppercase">
+                        {client.name[0]}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-sm font-bold text-zinc-600 dark:text-zinc-400 group-hover:text-primary transition-colors duration-300">
+                    {client.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
