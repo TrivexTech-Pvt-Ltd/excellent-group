@@ -1,12 +1,9 @@
-import { prisma } from "@/lib/prisma";
+import { sql } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 /**
  * POST /api/projects/import
  * Body: { name, description, image, url? }
- *
- * This endpoint allows any external project/app to push a project
- * directly into the Excellent Group website.
  */
 export async function POST(request: Request) {
     try {
@@ -20,14 +17,12 @@ export async function POST(request: Request) {
             );
         }
 
-        const project = await prisma.project.create({
-            data: {
-                name: String(name),
-                description: String(description),
-                image: String(image),
-                url: url ? String(url) : null,
-            },
-        });
+        const id = crypto.randomUUID();
+        const [project] = await sql`
+            INSERT INTO "Project" (id, name, description, image, url)
+            VALUES (${id}, ${String(name)}, ${String(description)}, ${String(image)}, ${url ? String(url) : null})
+            RETURNING *
+        `;
 
         return NextResponse.json({ success: true, project }, { status: 201 });
     } catch (error) {
@@ -44,8 +39,8 @@ export async function POST(request: Request) {
  * Returns all projects (useful for other apps to sync).
  */
 export async function GET() {
-    const projects = await prisma.project.findMany({
-        orderBy: { createdAt: "desc" },
-    });
+    const projects = await sql`
+        SELECT * FROM "Project" ORDER BY "createdAt" DESC
+    `;
     return NextResponse.json({ projects });
 }

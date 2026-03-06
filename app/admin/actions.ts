@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { sql } from "@/lib/db";
 import { encrypt } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -17,7 +17,10 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
         return { error: "Username and password are required." };
     }
 
-    const user = await prisma.user.findUnique({ where: { username } });
+    const [user] = await sql`
+        SELECT * FROM "User" WHERE username = ${username} LIMIT 1
+    `;
+
     if (!user || !(await bcrypt.compare(password, user.password))) {
         return { error: "Invalid username or password." };
     }
@@ -53,7 +56,13 @@ export async function createProjectAction(_prevState: unknown, formData: FormDat
         return { error: "Name, description, and image are required." };
     }
 
-    await prisma.project.create({ data: { name, description, image, url } });
+    const id = crypto.randomUUID();
+
+    await sql`
+        INSERT INTO "Project" (id, name, description, image, url)
+        VALUES (${id}, ${name}, ${description}, ${image}, ${url})
+    `;
+
     revalidatePath("/admin");
     revalidatePath("/admin/projects");
     revalidatePath("/");
@@ -66,10 +75,11 @@ export async function updateProjectAction(id: string, formData: FormData) {
     const image = (formData.get("image") as string)?.trim();
     const url = (formData.get("url") as string)?.trim() || null;
 
-    await prisma.project.update({
-        where: { id },
-        data: { name, description, image, url },
-    });
+    await sql`
+        UPDATE "Project"
+        SET name = ${name}, description = ${description}, image = ${image}, url = ${url}
+        WHERE id = ${id}
+    `;
 
     revalidatePath("/admin");
     revalidatePath("/admin/projects");
@@ -78,7 +88,10 @@ export async function updateProjectAction(id: string, formData: FormData) {
 }
 
 export async function deleteProjectAction(id: string) {
-    await prisma.project.delete({ where: { id } });
+    await sql`
+        DELETE FROM "Project" WHERE id = ${id}
+    `;
+
     revalidatePath("/admin");
     revalidatePath("/admin/projects");
     revalidatePath("/");
@@ -95,7 +108,13 @@ export async function createClientAction(_prevState: unknown, formData: FormData
         return { error: "Name and logo are required." };
     }
 
-    await prisma.client.create({ data: { name, logo } });
+    const id = crypto.randomUUID();
+
+    await sql`
+        INSERT INTO "Client" (id, name, logo)
+        VALUES (${id}, ${name}, ${logo})
+    `;
+
     revalidatePath("/admin");
     revalidatePath("/admin/clients");
     revalidatePath("/");
@@ -106,10 +125,11 @@ export async function updateClientAction(id: string, formData: FormData) {
     const name = (formData.get("name") as string)?.trim();
     const logo = (formData.get("logo") as string)?.trim();
 
-    await prisma.client.update({
-        where: { id },
-        data: { name, logo },
-    });
+    await sql`
+        UPDATE "Client"
+        SET name = ${name}, logo = ${logo}
+        WHERE id = ${id}
+    `;
 
     revalidatePath("/admin");
     revalidatePath("/admin/clients");
@@ -118,7 +138,10 @@ export async function updateClientAction(id: string, formData: FormData) {
 }
 
 export async function deleteClientAction(id: string) {
-    await prisma.client.delete({ where: { id } });
+    await sql`
+        DELETE FROM "Client" WHERE id = ${id}
+    `;
+
     revalidatePath("/admin");
     revalidatePath("/admin/clients");
     revalidatePath("/");

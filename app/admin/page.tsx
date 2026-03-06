@@ -1,17 +1,17 @@
-import { prisma } from "@/lib/prisma";
+import { sql } from "@/lib/db";
 import AdminShell from "@/components/admin/AdminShell";
 import Link from "next/link";
-import { FolderKanban, Users, Plus } from "lucide-react";
+import { FolderKanban, Users, Plus, Globe, ExternalLink } from "lucide-react";
 
 export default async function AdminDashboard() {
-    const projectCount = await prisma.project.count();
-    const clientCount = await prisma.client.count();
+    const [{ count: projectCount }] = await sql`SELECT count(*) FROM "Project"`;
+    const [{ count: clientCount }] = await sql`SELECT count(*) FROM "Client"`;
 
     return (
         <AdminShell title="Dashboard">
             <div className="space-y-8">
                 {/* Stats */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <StatCard
                         icon={<FolderKanban size={22} className="text-blue-400" />}
                         label="Total Projects"
@@ -25,6 +25,14 @@ export default async function AdminDashboard() {
                         value={clientCount}
                         href="/admin/clients"
                         color="purple"
+                    />
+                    <StatCard
+                        icon={<Globe size={22} className="text-emerald-400" />}
+                        label="Main Website"
+                        value="View"
+                        href="/"
+                        color="emerald"
+                        external
                     />
                 </div>
 
@@ -45,6 +53,13 @@ export default async function AdminDashboard() {
                             className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-sm font-medium transition-colors"
                         >
                             <Plus size={16} /> Add Client
+                        </Link>
+                        <Link
+                            href="/"
+                            target="_blank"
+                            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-medium transition-colors"
+                        >
+                            <Globe size={16} /> View Website
                         </Link>
                     </div>
                 </div>
@@ -68,25 +83,39 @@ function StatCard({
     value,
     href,
     color,
+    external,
 }: {
     icon: React.ReactNode;
     label: string;
-    value: number;
+    value: number | string;
     href: string;
-    color: "blue" | "purple";
+    color: "blue" | "purple" | "emerald";
+    external?: boolean;
 }) {
-    const ringColor = color === "blue" ? "ring-blue-800/40" : "ring-purple-800/40";
+    const ringColor =
+        color === "blue" ? "ring-blue-800/40" :
+            color === "purple" ? "ring-purple-800/40" :
+                "ring-emerald-800/40";
+
     const bgColor =
-        color === "blue" ? "bg-blue-950/30" : "bg-purple-950/30";
+        color === "blue" ? "bg-blue-950/30" :
+            color === "purple" ? "bg-purple-950/30" :
+                "bg-emerald-950/30";
 
     return (
         <Link
             href={href}
-            className={`block ${bgColor} border ${ringColor} ring-1 rounded-2xl p-6 hover:scale-[1.02] transition-transform`}
+            target={external ? "_blank" : undefined}
+            className={`block ${bgColor} border ${ringColor} ring-1 rounded-2xl p-6 hover:scale-[1.02] transition-transform group`}
         >
-            <div className="flex items-center gap-3 mb-4">{icon}</div>
-            <p className="text-zinc-400 text-sm">{label}</p>
-            <p className="text-4xl font-black text-white mt-1">{value}</p>
+            <div className="flex items-center justify-between mb-4">
+                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-zinc-900/50 border border-zinc-800 group-hover:border-zinc-700 transition-colors">
+                    {icon}
+                </div>
+                {external && <ExternalLink size={14} className="text-zinc-600 group-hover:text-zinc-400" />}
+            </div>
+            <p className="text-zinc-400 text-sm font-medium">{label}</p>
+            <p className="text-4xl font-black text-white mt-1 uppercase tracking-tighter">{value}</p>
         </Link>
     );
 }

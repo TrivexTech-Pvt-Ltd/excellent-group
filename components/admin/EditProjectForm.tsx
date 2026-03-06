@@ -36,6 +36,7 @@ export default function EditProjectForm({ project }: Props) {
         try {
             const fd = new FormData();
             fd.append("file", file);
+            fd.append("folder", "projects");
             const res = await fetch("/api/upload", { method: "POST", body: fd });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error ?? "Upload failed");

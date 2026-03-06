@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { sql } from "@/lib/db";
 import AdminShell from "@/components/admin/AdminShell";
 import AddClientForm from "@/components/admin/AddClientForm";
 import { ClientThumb } from "@/components/admin/Thumbnails";
@@ -7,9 +7,9 @@ import { deleteClientAction } from "@/app/admin/actions";
 import { Pencil, Trash2 } from "lucide-react";
 
 export default async function AdminClientsPage() {
-    const clients = await prisma.client.findMany({
-        orderBy: { createdAt: "desc" },
-    });
+    const clients = await sql`
+        SELECT * FROM "Client" ORDER BY "createdAt" DESC
+    `;
 
     return (
         <AdminShell title="Manage Clients">
@@ -34,7 +34,7 @@ export default async function AdminClientsPage() {
                         clients.map((client) => (
                             <div
                                 key={client.id}
-                                className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center gap-5 hover:border-zinc-700 transition-colors"
+                                className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-5 hover:border-zinc-700 transition-colors"
                             >
                                 {/* Logo */}
                                 <div className="w-14 h-14 rounded-xl bg-zinc-800 flex-shrink-0 overflow-hidden flex items-center justify-center">
@@ -47,7 +47,7 @@ export default async function AdminClientsPage() {
                                 </div>
 
                                 {/* Actions */}
-                                <div className="flex items-center gap-2 flex-shrink-0">
+                                <div className="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto justify-end border-t border-zinc-800 sm:border-0 pt-3 sm:pt-0">
                                     <Link
                                         href={`/admin/clients/${client.id}`}
                                         className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-xl transition-colors text-zinc-400 hover:text-white"

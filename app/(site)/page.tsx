@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ArrowRight,
   Shield,
@@ -8,50 +10,113 @@ import {
 import BusinessCard from "@/components/BusinessCard";
 import { businesses } from "@/data/businesses";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { sql } from "@/lib/db";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
-export default async function Home() {
-  const [projects, clients] = await Promise.all([
-    prisma.project.findMany({ orderBy: { createdAt: "desc" } }),
-    prisma.client.findMany({ orderBy: { createdAt: "desc" } }),
-  ]);
+export default function Home() {
+  const [data, setData] = useState<{ projects: any[], clients: any[] }>({ projects: [], clients: [] });
+
+  useEffect(() => {
+    // Scroll to top on refresh
+    window.scrollTo(0, 0);
+
+    async function fetchData() {
+      const resProjects = await fetch('/api/projects');
+      const resClients = await fetch('/api/clients');
+      const projects = await resProjects.json();
+      const clients = await resClients.json();
+      setData({ projects, clients });
+    }
+    fetchData();
+  }, []);
+
+  const { projects, clients } = data;
+
+  const fadeInUp = {
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true },
+    transition: { duration: 0.6 }
+  };
+
+  const staggerContainer = {
+    initial: {},
+    whileInView: {
+      transition: {
+        staggerChildren: 0.1
+      }
+    },
+    viewport: { once: true }
+  };
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full overflow-hidden">
       {/* Hero Section */}
       <section className="relative min-h-[85vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden pt-24 md:pt-32 pb-12">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent dark:from-primary/10" />
-          <div className="absolute top-1/4 left-1/4 w-72 h-72 md:w-96 md:h-96 bg-blue-500/10 rounded-full blur-[80px] md:blur-[120px] animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-72 h-72 md:w-96 md:h-96 bg-purple-500/10 rounded-full blur-[80px] md:blur-[120px] animate-pulse delay-1000" />
+          <motion.div
+            animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+            transition={{ duration: 10, repeat: Infinity }}
+            className="absolute top-1/4 left-1/4 w-72 h-72 md:w-96 md:h-96 bg-blue-500/10 rounded-full blur-[80px] md:blur-[120px]"
+          />
+          <motion.div
+            animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.15, 0.1] }}
+            transition={{ duration: 12, repeat: Infinity, delay: 1 }}
+            className="absolute bottom-1/4 right-1/4 w-72 h-72 md:w-96 md:h-96 bg-purple-500/10 rounded-full blur-[80px] md:blur-[120px]"
+          />
         </div>
 
         <div className="container mx-auto px-4 md:px-6 relative z-10 text-center">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tight mb-6 md:mb-8 leading-[1.1]">
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tight mb-6 md:mb-8 leading-[1.1]"
+          >
             ONE GROUP.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 1 }}
+              className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600"
+            >
               THREE INDUSTRIES.
-            </span>
-          </h1>
-          <p className="text-lg md:text-xl lg:text-2xl text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto mb-10 md:mb-12 px-4">
+            </motion.span>
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 1 }}
+            className="text-lg md:text-xl lg:text-2xl text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto mb-10 md:mb-12 px-4"
+          >
             Pioneering the future through innovative technology, sustainable energy, and creative manufacturing.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 px-4">
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1, duration: 0.5 }}
+            className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 px-4"
+          >
             <Link
               href="/#businesses"
-              className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-foreground text-background rounded-full font-bold text-base md:text-lg hover:scale-105 transition-transform inline-flex items-center justify-center space-x-2"
+              className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-foreground text-background rounded-full font-bold text-base md:text-lg hover:scale-105 transition-transform inline-flex items-center justify-center space-x-2 shadow-2xl shadow-blue-500/20"
             >
               <span>Explore Businesses</span>
               <ArrowRight size={20} />
             </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Businesses Grid */}
       <section id="businesses" className="py-24 bg-zinc-50 dark:bg-zinc-950">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col md:row justify-between items-end mb-16 space-y-4 md:space-y-0 text-center md:text-left">
+          <motion.div
+            {...fadeInUp}
+            className="flex flex-col md:row justify-between items-end mb-16 space-y-4 md:space-y-0 text-center md:text-left"
+          >
             <div>
               <h2 className="text-sm uppercase font-bold tracking-[0.3em] text-primary mb-4">Our Ecosystem</h2>
               <h3 className="text-4xl md:text-6xl font-bold">Solutions for every frontier</h3>
@@ -59,16 +124,21 @@ export default async function Home() {
             <p className="text-zinc-500 max-w-md">
               From the digital realm to physical hardware and sustainable power - we've got you covered.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <motion.div
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="whileInView"
+            viewport={{ once: true }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          >
             {businesses.map((biz) => (
-              <BusinessCard
-                key={biz.slug}
-                {...biz}
-              />
+              <motion.div key={biz.slug} variants={fadeInUp}>
+                <BusinessCard {...biz} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -76,27 +146,39 @@ export default async function Home() {
       <section className="py-24">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
-            <div>
+            <motion.div {...fadeInUp}>
               <h3 className="text-4xl md:text-5xl font-bold mb-8 italic">Why Excellent Group?</h3>
               <div className="space-y-8">
                 {[
                   { icon: Shield, title: "Reliability", desc: "Decades of combined expertise across diverse engineering and digital sectors." },
                   { icon: Zap, title: "Innovation", desc: "Using the latest 3D printing, AI software, and high-efficiency solar tech." },
-                  { icon: Globe, title: "Sustainability", desc: "Commitment to eco-friendly practices in manufacturing and energy." },
+                  { icon: Globe, title: "Globe Reach", desc: "Commitment to eco-friendly practices in manufacturing and energy." },
                 ].map((item, i) => (
-                  <div key={i} className="flex space-x-4">
-                    <div className="h-12 w-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0">
-                      <item.icon className="text-primary" />
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="flex space-x-4 group"
+                  >
+                    <div className="h-12 w-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                      <item.icon className="group-hover:text-white transition-colors" size={20} />
                     </div>
                     <div>
                       <h4 className="font-bold text-xl mb-1">{item.title}</h4>
-                      <p className="text-zinc-500">{item.desc}</p>
+                      <p className="text-zinc-500 group-hover:text-zinc-400 transition-colors uppercase text-xs font-bold tracking-widest">{item.desc}</p>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
-            </div>
-            <div className="relative group">
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="relative group"
+            >
               <div className="aspect-square rounded-full bg-gradient-to-tr from-blue-600/20 to-orange-500/20 absolute -z-10 blur-3xl animate-spin-slow" />
               <div className="bg-zinc-100 dark:bg-zinc-900 aspect-video rounded-3xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-2xl relative">
                 <img
@@ -110,7 +192,7 @@ export default async function Home() {
                   </span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -118,8 +200,7 @@ export default async function Home() {
       {/* ── Our Projects ─────────────────────────────────────────────── */}
       <section id="projects" className="py-24 bg-zinc-50 dark:bg-zinc-950">
         <div className="container mx-auto px-6">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 space-y-4 md:space-y-0">
+          <motion.div {...fadeInUp} className="flex flex-col md:flex-row justify-between items-end mb-16 space-y-4 md:space-y-0">
             <div>
               <h2 className="text-sm uppercase font-bold tracking-[0.3em] text-primary mb-4">
                 Our Work
@@ -130,21 +211,27 @@ export default async function Home() {
               A selection of our latest builds — from digital platforms to
               engineered solutions.
             </p>
-          </div>
+          </motion.div>
 
-          {/* Projects grid */}
           {projects.length === 0 ? (
             <div className="border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl py-20 text-center">
               <p className="text-zinc-400">No projects yet — check back soon.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <motion.div
+              variants={staggerContainer}
+              initial="initial"
+              whileInView="whileInView"
+              viewport={{ once: true }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            >
               {projects.map((project) => (
-                <div
+                <motion.div
                   key={project.id}
+                  variants={fadeInUp}
+                  whileHover={{ y: -5 }}
                   className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl overflow-hidden hover:border-blue-400/50 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300"
                 >
-                  {/* Image */}
                   <div className="aspect-video relative overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                     {(project.image.startsWith("http") ||
                       project.image.startsWith("/")) ? (
@@ -160,11 +247,9 @@ export default async function Home() {
                         </span>
                       </div>
                     )}
-                    {/* Overlay gradient */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
 
-                  {/* Content */}
                   <div className="p-6">
                     <h4 className="text-lg font-bold mb-2 text-zinc-900 dark:text-white">
                       {project.name}
@@ -183,39 +268,42 @@ export default async function Home() {
                       </a>
                     )}
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
         </div>
       </section>
 
-      {/* ── Our Clients ──────────────────────────────────────────────── */}
+      {/* Clients Section */}
       <section id="clients" className="py-24">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
+          <motion.div {...fadeInUp} className="text-center mb-16">
             <h2 className="text-sm uppercase font-bold tracking-[0.3em] text-primary mb-4">
               Trusted By
             </h2>
             <h3 className="text-4xl md:text-5xl font-bold">Our Clients</h3>
-            <p className="text-zinc-500 mt-4 max-w-xl mx-auto">
-              Leading companies across industries trust Excellent Group to
-              deliver.
-            </p>
-          </div>
+          </motion.div>
 
           {clients.length === 0 ? (
             <p className="text-center text-zinc-400 py-10 italic">
               Our client portfolio is growing…
             </p>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 md:gap-12 items-start">
+            <motion.div
+              variants={staggerContainer}
+              initial="initial"
+              whileInView="whileInView"
+              viewport={{ once: true }}
+              className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 md:gap-12 items-center"
+            >
               {clients.map((client) => (
-                <div
+                <motion.div
                   key={client.id}
+                  variants={fadeInUp}
                   className="group flex flex-col items-center justify-center text-center space-y-4"
                 >
-                  <div className="h-24 w-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                  <div className="h-16 w-full flex items-center justify-center transition-all duration-300 group-hover:scale-110">
                     {client.logo.startsWith("http") ||
                       client.logo.startsWith("/") ? (
                       <img
@@ -224,35 +312,64 @@ export default async function Home() {
                         className="h-full max-w-full object-contain"
                       />
                     ) : (
-                      <span className="text-4xl font-black tracking-tight text-zinc-300 dark:text-zinc-600 group-hover:text-primary transition-colors duration-300 uppercase">
+                      <span className="text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-primary transition-colors duration-300 uppercase">
                         {client.name[0]}
                       </span>
                     )}
                   </div>
-                  <span className="text-sm font-bold text-zinc-600 dark:text-zinc-400 group-hover:text-primary transition-colors duration-300">
-                    {client.name}
-                  </span>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl md:text-6xl font-bold mb-8">Ready to start a project?</h2>
-          <p className="text-xl mb-12 opacity-80 max-w-2xl mx-auto">
-            Whether it's a 3D model, a complex software suite, or a solar installation, our experts are here to help.
-          </p>
-          <Link
-            href="/contact"
-            className="px-10 py-5 bg-primary text-white rounded-full font-bold text-lg hover:scale-105 transition-transform inline-flex items-center space-x-2"
+      <section className="py-24 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 overflow-hidden relative">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.div
+            animate={{ y: [0, -50, 0], opacity: [0.1, 0.2, 0.1] }}
+            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px]"
+          />
+        </div>
+        <div className="container mx-auto px-6 text-center relative z-10">
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-6xl font-bold mb-8"
           >
-            <span>Talk to Our Team</span>
-            <ArrowRight size={20} />
-          </Link>
+            Ready to start a project?
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="text-xl mb-12 opacity-80 max-w-2xl mx-auto"
+          >
+            Whether it's a 3D model, a complex software suite, or a solar installation, our experts are here to help.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+          >
+            <Link
+              href="/contact"
+              className="px-10 py-5 bg-blue-600 text-white rounded-full font-bold text-lg hover:scale-105 transition-transform inline-flex items-center space-x-2 group"
+            >
+              <span>Talk to Our Team</span>
+              <motion.span
+                animate={{ x: [0, 5, 0] }}
+                transition={{ repeat: Infinity, duration: 1.5 }}
+              >
+                <ArrowRight size={20} />
+              </motion.span>
+            </Link>
+          </motion.div>
         </div>
       </section>
     </div>

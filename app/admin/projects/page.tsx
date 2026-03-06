@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { sql } from "@/lib/db";
 import AdminShell from "@/components/admin/AdminShell";
 import AddProjectForm from "@/components/admin/AddProjectForm";
 import { ProjectThumb } from "@/components/admin/Thumbnails";
@@ -7,9 +7,9 @@ import { deleteProjectAction } from "@/app/admin/actions";
 import { ExternalLink, Pencil, Trash2 } from "lucide-react";
 
 export default async function AdminProjectsPage() {
-    const projects = await prisma.project.findMany({
-        orderBy: { createdAt: "desc" },
-    });
+    const projects = await sql`
+        SELECT * FROM "Project" ORDER BY "createdAt" DESC
+    `;
 
     return (
         <AdminShell title="Manage Projects">
@@ -34,7 +34,7 @@ export default async function AdminProjectsPage() {
                         projects.map((project) => (
                             <div
                                 key={project.id}
-                                className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-start gap-5 hover:border-zinc-700 transition-colors"
+                                className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start gap-4 sm:gap-5 hover:border-zinc-700 transition-colors"
                             >
                                 {/* Thumbnail */}
                                 <div className="w-16 h-16 rounded-xl bg-zinc-800 flex-shrink-0 overflow-hidden flex items-center justify-center">
@@ -62,7 +62,7 @@ export default async function AdminProjectsPage() {
                                 </div>
 
                                 {/* Actions */}
-                                <div className="flex items-center gap-2 flex-shrink-0">
+                                <div className="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto justify-end border-t border-zinc-800 sm:border-0 pt-3 sm:pt-0">
                                     <Link
                                         href={`/admin/projects/${project.id}`}
                                         className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-xl transition-colors text-zinc-400 hover:text-white"

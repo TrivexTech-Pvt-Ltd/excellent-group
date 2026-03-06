@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { v2 as cloudinary } from "cloudinary";
+
+// Configure Cloudinary using the CLOUDINARY_URL from the environment
+cloudinary.config({
+    secure: true,
+});
 
 export async function POST(request: NextRequest) {
     try {
         const formData = await request.formData();
         const file = formData.get("file") as File;
+        const folder = (formData.get("folder") as string) || "others";
 
         if (!file || file.size === 0) {
             return NextResponse.json({ error: "No file provided." }, { status: 400 });
@@ -22,23 +27,29 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "File size must be under 5MB." }, { status: 400 });
         }
 
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
 
-        // Create uploads dir if needed
-        const uploadsDir = path.join(process.cwd(), "public", "uploads");
-        await mkdir(uploadsDir, { recursive: true });
+        // Upload to Cloudinary using a Promise to handle the stream
+        const result: any = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                {
+                    folder: `excellent-group/${folder}`, // Organized folder structure in Cloudinary
+                    resource_type: "auto",
+                },
+                (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                }
+            );
 
-        // Unique filename
-        const ext = file.name.split(".").pop();
-        const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-        const filepath = path.join(uploadsDir, filename);
+            uploadStream.end(buffer);
+        });
 
-        await writeFile(filepath, buffer);
-
-        return NextResponse.json({ url: `/uploads/${filename}` });
+        // Return the secure URL from Cloudinary
+        return NextResponse.json({ url: result.secure_url });
     } catch (error) {
         console.error("[/api/upload]", error);
-        return NextResponse.json({ error: "Upload failed." }, { status: 500 });
+        return NextResponse.json({ error: "Upload to Cloudinary failed." }, { status: 500 });
     }
 }
