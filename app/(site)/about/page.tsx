@@ -9,7 +9,7 @@ export default function About() {
                 {/* Story */}
                 <section className="max-w-4xl mx-auto mb-20 md:mb-32">
                     <h1 className="text-5xl sm:text-6xl md:text-8xl font-black mb-8 md:mb-12 tracking-tighter leading-none">OUR STORY.</h1>
-                    <div className="space-y-6 md:space-y-8 text-lg sm:text-xl md:text-2xl text-zinc-500 dark:text-zinc-400 leading-relaxed px-2">
+                    <div className="space-y-6 md:space-y-8 text-lg sm:text-xl md:text-2xl text-zinc-400 leading-relaxed px-2">
                         <p>
                             Excellent Group began with a simple vision: to bridge the gap between imagination and reality. What started as a small IT consultancy has grown into a multi-disciplinary conglomerate.
                         </p>
@@ -28,11 +28,11 @@ export default function About() {
                         { icon: Target, title: "Precision", desc: "Accuracy is the foundation of everything we build." },
                     ].map((v, i) => (
                         <div key={i} className="glass p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] hover:bg-primary/5 transition-colors">
-                            <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-6 md:mb-8 text-primary">
+                            <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-zinc-800 flex items-center justify-center mb-6 md:mb-8 text-primary">
                                 <v.icon size={28} className="md:w-8 md:h-8" />
                             </div>
                             <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">{v.title}</h3>
-                            <p className="text-sm md:text-base text-zinc-500 dark:text-zinc-400">{v.desc}</p>
+                            <p className="text-sm md:text-base text-zinc-400">{v.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -43,7 +43,7 @@ export default function About() {
                         <div key={biz.slug} className={`flex flex-col ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} gap-16 items-center`}>
                             <div className="flex-1 text-center md:text-left">
                                 <h2 className={`text-4xl md:text-6xl font-black mb-6 uppercase tracking-tight`}>{biz.name}</h2>
-                                <p className="text-xl text-zinc-500 dark:text-zinc-400 mb-8 max-w-xl">
+                                <p className="text-xl text-zinc-400 mb-8 max-w-xl">
                                     {biz.description}
                                 </p>
                                 <Link

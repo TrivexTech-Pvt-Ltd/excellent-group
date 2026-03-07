@@ -55,7 +55,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative min-h-[85vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden pt-24 md:pt-32 pb-12">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent dark:from-primary/10" />
+          <div className="absolute inset-0 bg-linear-to-b from-primary/10 to-transparent" />
           <motion.div
             animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
             transition={{ duration: 10, repeat: Infinity }}
@@ -80,7 +80,7 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5, duration: 1 }}
-              className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600"
+              className="text-transparent bg-clip-text bg-l inear-to-r from-blue-600 to-purple-600"
             >
               THREE INDUSTRIES.
             </motion.span>
@@ -89,7 +89,7 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 1 }}
-            className="text-lg md:text-xl lg:text-2xl text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto mb-10 md:mb-12 px-4"
+            className="text-lg md:text-xl lg:text-2xl text-zinc-400 max-w-2xl mx-auto mb-10 md:mb-12 px-4"
           >
             Pioneering the future through innovative technology, sustainable energy, and creative manufacturing.
           </motion.p>
@@ -111,7 +111,7 @@ export default function Home() {
       </section>
 
       {/* Businesses Grid */}
-      <section id="businesses" className="py-24 bg-zinc-50 dark:bg-zinc-950">
+      <section id="businesses" className="py-24 bg-zinc-950">
         <div className="container mx-auto px-6">
           <motion.div
             {...fadeInUp}
@@ -162,7 +162,7 @@ export default function Home() {
                     transition={{ delay: i * 0.1 }}
                     className="flex space-x-4 group"
                   >
-                    <div className="h-12 w-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                    <div className="h-12 w-12 rounded-xl bg-zinc-800 flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                       <item.icon className="group-hover:text-white transition-colors" size={20} />
                     </div>
                     <div>
@@ -180,7 +180,7 @@ export default function Home() {
               className="relative group"
             >
               <div className="aspect-square rounded-full bg-gradient-to-tr from-blue-600/20 to-orange-500/20 absolute -z-10 blur-3xl animate-spin-slow" />
-              <div className="bg-zinc-100 dark:bg-zinc-900 aspect-video rounded-3xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-2xl relative">
+              <div className="bg-zinc-900 aspect-video rounded-3xl border border-zinc-800 overflow-hidden shadow-2xl relative">
                 <img
                   src="/images/future-industry.png"
                   alt="Future of Industry"
@@ -198,7 +198,7 @@ export default function Home() {
       </section>
 
       {/* ── Our Projects ─────────────────────────────────────────────── */}
-      <section id="projects" className="py-24 bg-zinc-50 dark:bg-zinc-950">
+      <section id="projects" className="py-24 bg-zinc-950">
         <div className="container mx-auto px-6">
           <motion.div {...fadeInUp} className="flex flex-col md:flex-row justify-between items-end mb-16 space-y-4 md:space-y-0">
             <div>
@@ -214,7 +214,7 @@ export default function Home() {
           </motion.div>
 
           {projects.length === 0 ? (
-            <div className="border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl py-20 text-center">
+            <div className="border-2 border-dashed border-zinc-800 rounded-3xl py-20 text-center">
               <p className="text-zinc-400">No projects yet — check back soon.</p>
             </div>
           ) : (
@@ -230,9 +230,9 @@ export default function Home() {
                   key={project.id}
                   variants={fadeInUp}
                   whileHover={{ y: -5 }}
-                  className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl overflow-hidden hover:border-blue-400/50 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300"
+                  className="group bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden hover:border-blue-400/50 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300"
                 >
-                  <div className="aspect-video relative overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                  <div className="aspect-video relative overflow-hidden bg-zinc-800">
                     {(project.image.startsWith("http") ||
                       project.image.startsWith("/")) ? (
                       <img
@@ -242,7 +242,7 @@ export default function Home() {
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-4xl font-black text-zinc-300 dark:text-zinc-600 tracking-tighter">
+                        <span className="text-4xl font-black text-zinc-600 tracking-tighter">
                           {project.name[0]}
                         </span>
                       </div>
@@ -251,10 +251,10 @@ export default function Home() {
                   </div>
 
                   <div className="p-6">
-                    <h4 className="text-lg font-bold mb-2 text-zinc-900 dark:text-white">
+                    <h4 className="text-lg font-bold mb-2 text-white">
                       {project.name}
                     </h4>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-3 leading-relaxed">
+                    <p className="text-sm text-zinc-400 line-clamp-3 leading-relaxed">
                       {project.description}
                     </p>
                     {project.url && (
@@ -312,7 +312,7 @@ export default function Home() {
                         className="h-full max-w-full object-contain"
                       />
                     ) : (
-                      <span className="text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-primary transition-colors duration-300 uppercase">
+                      <span className="text-3xl font-black tracking-tight text-zinc-100 group-hover:text-primary transition-colors duration-300 uppercase">
                         {client.name[0]}
                       </span>
                     )}
@@ -325,7 +325,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 overflow-hidden relative">
+      <section className="py-24 bg-zinc-100 text-zinc-900 overflow-hidden relative">
         <div className="absolute inset-0 pointer-events-none">
           <motion.div
             animate={{ y: [0, -50, 0], opacity: [0.1, 0.2, 0.1] }}
